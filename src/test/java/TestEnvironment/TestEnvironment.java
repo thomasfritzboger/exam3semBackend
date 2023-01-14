@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestEnvironment {
     protected int nonExistingId;
     protected static Faker faker = Faker.instance(new Locale("da-DK"));
-    protected static Role role;
+    protected static Role userRole;
+    protected static Role adminRole;
     protected static EntityManagerFactory emf;
 
     protected static final String password = "test123";
@@ -45,9 +46,10 @@ public class TestEnvironment {
     }
 
     private void populateDatabase() {
-        role = createRole();
-        role.setRole("user");
-        persist(role);
+        userRole = new Role("user");
+        adminRole = new Role("admin");
+        persist(userRole);
+        persist(adminRole);
     }
 
     @BeforeAll
@@ -82,6 +84,26 @@ public class TestEnvironment {
         return entity;
     }
 
+    protected User createAndPersistAdminUser() {
+        User user = createAdminUser();
+        return (User) persist(user);
+    }
+
+    protected User createAdminUser() {
+        try {
+            User user = new User(
+                    faker.letterify("?????"),
+                    password,
+                    faker.number().numberBetween(13, 120)
+            );
+            user.addRole(adminRole);
+            return user;
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+        return null;
+    }
+
     protected User createAndPersistUser() {
         User user = createUser();
         return (User) persist(user);
@@ -94,14 +116,13 @@ public class TestEnvironment {
                     password,
                     faker.number().numberBetween(13, 120)
             );
-            user.addRole(role);
+            user.addRole(userRole);
             return user;
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         }
         return null;
     }
-
     protected Role createAndPersistRole() {
         Role role = createRole();
         return (Role) persist(role);

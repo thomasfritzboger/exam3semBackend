@@ -31,16 +31,16 @@ public class Role implements Serializable, entities.Entity {
     public Role() {
     }
 
+    public Role(String role) {
+        this.role = role;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Role(String role) {
-        this.role = role;
     }
 
     public String getRole() {
