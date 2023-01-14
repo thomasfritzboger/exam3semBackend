@@ -213,22 +213,22 @@ public class TestEnvironment {
 //                property+" with value "+value+" in the database");
 //    }
 
-    protected void assertDatabaseHasEntityRelatedToPerson(Entity persistedEntity, int personId) {
+    protected void assertDatabaseHasEntitiesRelated(Entity entity, Entity related) {
         EntityManager em = emf.createEntityManager();
 
-        Query query = em.createQuery("SELECT count(entity) FROM " + persistedEntity.getClass().getSimpleName()
-                +"  entity WHERE entity.person.id "+  "=  " + personId);
+        Query query = em.createQuery("SELECT count(entity) FROM " + entity.getClass().getSimpleName()
+                +"  entity WHERE entity."+related.getClass().getSimpleName().toLowerCase()+".id = " + related.getId());
 
         Long amount = (Long) query.getSingleResult();
 
         assertNotEquals(0,amount);
     }
 
-    protected void assertDatabaseDoesNotHaveEntityRelatedToPerson(Entity persistedEntity, int personId) {
+    protected void assertDatabaseDoesNotHaveEntitiesRelated(Entity entity, Entity notRelated) {
         EntityManager em = emf.createEntityManager();
 
-        Query query = em.createQuery("SELECT count(entity) FROM " + persistedEntity.getClass().getSimpleName()
-                +"  entity WHERE entity.person.id "+  "=  " + personId);
+        Query query = em.createQuery("SELECT count(entity) FROM " + entity.getClass().getSimpleName()
+                +"  entity WHERE entity."+notRelated.getClass().getSimpleName().toLowerCase()+".id = " + notRelated.getId());
 
         Long amount = (Long) query.getSingleResult();
 
