@@ -7,11 +7,12 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "shows")
-public class Show {
+public class Show implements entities.Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -44,6 +45,17 @@ public class Show {
             joinColumns = @JoinColumn(name = "show_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new LinkedHashSet<>();
+
+    public Show() {
+    }
+
+    public Show(String name, Integer duration, String location, LocalDate startdate, LocalTime starttime) {
+        this.name = name;
+        this.duration = duration;
+        this.location = location;
+        this.startdate = startdate;
+        this.starttime = starttime;
+    }
 
     public Integer getId() {
         return id;
@@ -101,4 +113,16 @@ public class Show {
         this.users = users;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Show show = (Show) o;
+        return id.equals(show.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

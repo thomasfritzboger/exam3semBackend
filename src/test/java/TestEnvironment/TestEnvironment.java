@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import utils.EMF_Creator;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -142,6 +143,26 @@ public class TestEnvironment {
             System.out.println("Exception: " + e);
         }
         return null;
+    }
+
+    protected Show createAndPersistShow() {
+        Show show = createShow();
+        return (Show) persist(show);
+    }
+
+    protected Show createShow() {
+        LocalTime startTime = LocalTime.of(
+                faker.number().numberBetween(0,23),
+                faker.number().numberBetween(0,59));
+
+        return new Show(
+                faker.name().name(),
+                faker.number().numberBetween(10,500),
+                faker.address().streetAddress(),
+                faker.date().future(500, TimeUnit.DAYS).toInstant().
+                        atZone(ZoneId.systemDefault()).toLocalDate(),
+                startTime
+        );
     }
 
     protected Festival createAndPersistFestival() {
