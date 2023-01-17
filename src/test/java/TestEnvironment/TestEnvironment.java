@@ -3,6 +3,7 @@ package TestEnvironment;
 import com.github.javafaker.Faker;
 import entities.*;
 import entities.Entity;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import utils.EMF_Creator;
@@ -20,7 +21,6 @@ public class TestEnvironment {
     protected static Faker faker = Faker.instance(new Locale("da-DK"));
     protected static Role guestRole;
     protected static Role adminRole;
-    protected static Festival festival;
 
     protected static EntityManagerFactory emf;
 
@@ -57,8 +57,6 @@ public class TestEnvironment {
     private void populateDatabase() {
         guestRole = new Role("guest");
         adminRole = new Role("admin");
-        festival = createAndPersistFestival();
-        persist(festival);
         persist(guestRole);
         persist(adminRole);
     }
@@ -131,7 +129,7 @@ public class TestEnvironment {
         try {
             User user = new User(
                     password,
-                    faker.name().username(),
+                    faker.letterify("???"),
                     faker.name().fullName(),
                     Integer.parseInt(faker.number().digits(8)),
                     faker.internet().emailAddress(),

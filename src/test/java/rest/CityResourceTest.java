@@ -1,6 +1,7 @@
 package rest;
 
-import entities.Show;
+import entities.City;
+import entities.Festival;
 import entities.User;
 import io.restassured.http.ContentType;
 import org.glassfish.grizzly.http.util.HttpStatus;
@@ -9,17 +10,15 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-public class ShowResourceTest extends ResourceTestEnvironment {
-    private final String BASE_URL = "/shows/";
+public class CityResourceTest extends ResourceTestEnvironment {
+    private final String BASE_URL = "/cities/";
 
     @Test
-    void getAllShowsTest() {
-        User guest = createAndPersistUser();
+    void getAllCitiesTest() {
+        User admin = createAndPersistAdminUser();
+        City cityB = createAndPersistCity();
 
-        Show showA = createAndPersistShow();
-        Show showB = createAndPersistShow();
-
-        login(guest);
+        login(admin);
 
         given()
                 .header("Content-type", ContentType.JSON)
@@ -31,32 +30,15 @@ public class ShowResourceTest extends ResourceTestEnvironment {
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .contentType(ContentType.JSON)
                 .body("$",hasSize(2))
-                .body("$",hasItem(hasEntry("id",showA.getId())))
-                .body("$",hasItem(hasEntry("id",showB.getId())));
+                .body("$",hasItem(hasEntry("id",admin.getFestival().getCity().getId())))
+                .body("$",hasItem(hasEntry("id",cityB.getId())));
     }
 
     @Test
-    void getAllShowsNoShowsTest() {
+    void getAllCitiesWhenUnAuthorizedTest() {
         User guest = createAndPersistUser();
 
         login(guest);
-
-        given()
-                .header("x-access-token", securityToken)
-                .when()
-                .get(BASE_URL)
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.OK_200.getStatusCode())
-                .contentType(ContentType.JSON)
-                .body("$",hasSize(0));
-    }
-
-    @Test
-    void getAllShowsWhenUnAuthorizedTest() {
-        User admin = createAndPersistAdminUser();
-
-        login(admin);
 
         given()
                 .header("x-access-token", securityToken)
@@ -68,7 +50,7 @@ public class ShowResourceTest extends ResourceTestEnvironment {
     }
 
     @Test
-    void getAllShowsWhenUnAuthenticatedTest() {
+    void getAllCitiesWhenUnAuthenticatedTest() {
 
         given()
                 .when()
@@ -77,5 +59,4 @@ public class ShowResourceTest extends ResourceTestEnvironment {
                 .assertThat()
                 .statusCode(HttpStatus.FORBIDDEN_403.getStatusCode());
     }
-
 }

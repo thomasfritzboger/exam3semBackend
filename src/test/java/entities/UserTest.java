@@ -11,6 +11,7 @@ public class UserTest extends TestEnvironment {
 
     @Test
     public void createUserWithPasswordBelowMinimumLengthTest() {
+        Festival festival = createAndPersistFestival();
 
         assertThrows(InvalidPasswordException.class, () -> {
             new User(
@@ -26,6 +27,8 @@ public class UserTest extends TestEnvironment {
 
     @Test
     public void createUserPasswordWithExactlyMinimumLengthTest() {
+        Festival festival = createAndPersistFestival();
+
         assertDoesNotThrow(() -> {
             new User(
                     faker.letterify("????"),

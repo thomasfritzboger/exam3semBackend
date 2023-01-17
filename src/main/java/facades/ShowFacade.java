@@ -30,6 +30,5 @@ public class ShowFacade {
             List<Show> shows = query.getResultList();
             em.close();
             return shows;
-
     }
 }

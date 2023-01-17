@@ -25,8 +25,11 @@ public class Populator {
         EntityManager em = emf.createEntityManager();
 
         City roskilde = new City("Roskilde",4000);
+        City ronne = new City("Rønne",3700);
 
         Festival roskildeFestival = new Festival("Roskilde Festival", LocalDate.of(2023, Month.JUNE, 24),8,roskilde);
+        Festival roskildeDyrskue = new Festival("Roskilde Dyrskue", LocalDate.of(2023, Month.JUNE, 2),3,roskilde);
+        Festival wonderFestiwall = new Festival("WonderFestiwall", LocalDate.of(2023, Month.AUGUST, 17),4,ronne);
 
         Show showA = new Show("WaterShow",120,"Lalandia",LocalDate.of(2023, Month.JUNE, 14), LocalTime.of(12,00));
         Show showB = new Show("FireShow",60,"Tivoli",LocalDate.of(2023, Month.MAY, 9), LocalTime.of(21,00));
@@ -36,7 +39,10 @@ public class Populator {
         try {
             em.getTransaction().begin();
             em.persist(roskilde);
+            em.persist(ronne);
             em.persist(roskildeFestival);
+            em.persist(roskildeDyrskue);
+            em.persist(wonderFestiwall);
             em.persist(showA);
             em.persist(showB);
             em.persist(showC);

@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -32,16 +33,16 @@ public class Festival implements entities.Entity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cities_id", nullable = false)
-    private City cities;
+    private City city;
 
     @OneToMany(mappedBy = "festival")
     private Set<User> users = new LinkedHashSet<>();
 
-    public Festival(String name, LocalDate startdate, Integer duration, City cities) {
+    public Festival(String name, LocalDate startdate, Integer duration, City city) {
         this.name = name;
         this.startdate = startdate;
         this.duration = duration;
-        this.cities = cities;
+        this.city = city;
     }
 
     public Festival() {
@@ -63,11 +64,11 @@ public class Festival implements entities.Entity {
         this.name = name;
     }
 
-    public LocalDate getStartdate() {
+    public LocalDate getStartDate() {
         return startdate;
     }
 
-    public void setStartdate(LocalDate startdate) {
+    public void setStartDate(LocalDate startdate) {
         this.startdate = startdate;
     }
 
@@ -79,12 +80,12 @@ public class Festival implements entities.Entity {
         this.duration = duration;
     }
 
-    public City getCities() {
-        return cities;
+    public City getCity() {
+        return city;
     }
 
-    public void setCities(City cities) {
-        this.cities = cities;
+    public void setCity(City cities) {
+        this.city = cities;
     }
 
     public Set<User> getUsers() {
@@ -95,4 +96,16 @@ public class Festival implements entities.Entity {
         this.users = users;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Festival festival = (Festival) o;
+        return id.equals(festival.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

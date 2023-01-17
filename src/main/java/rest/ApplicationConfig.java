@@ -31,5 +31,7 @@ public class ApplicationConfig extends Application {
         resources.add(rest.UserResource.class);
         resources.add(UtilityResource.class);
         resources.add(ShowResource.class);
+        resources.add(FestivalResource.class);
+        resources.add(CityResource.class);
     }
 }

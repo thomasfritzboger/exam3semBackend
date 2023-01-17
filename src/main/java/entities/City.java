@@ -5,6 +5,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -24,7 +25,7 @@ public class City implements entities.Entity {
     @Column(name = "zipcode", nullable = false)
     private Integer zipcode;
 
-    @OneToMany(mappedBy = "cities")
+    @OneToMany(mappedBy = "city")
     private Set<Festival> festivals = new LinkedHashSet<>();
 
     public City(String name, Integer zipcode) {
@@ -68,4 +69,16 @@ public class City implements entities.Entity {
         this.festivals = festivals;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        City city = (City) o;
+        return id.equals(city.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
