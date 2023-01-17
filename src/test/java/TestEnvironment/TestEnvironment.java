@@ -212,11 +212,11 @@ public class TestEnvironment {
         }
     }
 
-    protected void assertDatabaseDoesNotHaveEntity(Entity entity, int id) {
+    protected void assertDatabaseDoesNotHaveEntity(Entity entity) {
         EntityManager em = emf.createEntityManager();
         try {
-            Entity foundEntity = em.find(entity.getClass(), id);
-            assertNull(foundEntity, "Entity: " + entity.getClass()+" with id: " + id + " does exist!");
+            Entity foundEntity = em.find(entity.getClass(), entity.getId());
+            assertNull(foundEntity, "Entity: " + entity.getClass()+" with id: " + entity.getId() + " does exist!");
         } finally {
             em.close();
         }

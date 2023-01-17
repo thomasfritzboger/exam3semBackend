@@ -1,14 +1,16 @@
 package facades;
 
 import TestEnvironment.TestEnvironment;
+import entities.City;
 import entities.Show;
+import entities.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ShowFacadeTest extends TestEnvironment {
     private static ShowFacade facade;
@@ -40,4 +42,31 @@ public class ShowFacadeTest extends TestEnvironment {
         assertEquals(0,actual.size());
     }
 
+    @Test
+    public void getShowByIdTest() {
+       Show expected = createAndPersistShow();
+
+        Show actual = facade.getShowById(expected.getId());
+
+        assertEquals(expected.getId(),actual.getId());
+    }
+
+    @Test
+    public void getShowByNonExistingIdTest() {
+        assertThrows(EntityNotFoundException.class,()-> facade.getShowById(nonExistingId));
+    }
+
+    @Test
+    public void deleteShowTest(){
+        Show show = createAndPersistShow();
+        facade.deleteShow(show);
+        assertDatabaseDoesNotHaveEntity(show);
+    }
+
+    @Test
+    public void deleteNonPersistedShowTest(){
+        Show notPersisted = createShow();
+
+        assertDoesNotThrow(() -> facade.deleteShow(notPersisted));
+    }
 }

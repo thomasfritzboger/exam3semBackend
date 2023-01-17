@@ -2,13 +2,13 @@ package rest;
 
 import dtos.ShowDTO;
 import entities.Show;
+import entities.User;
 import facades.ShowFacade;
 import org.glassfish.grizzly.http.util.HttpStatus;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class ShowResource extends Resource {
     private final ShowFacade facade = ShowFacade.getFacade(EMF);
 
     @GET
-    @RolesAllowed("guest")
+    @RolesAllowed({"guest","admin"})
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllShows() {
         List<Show> shows = facade.getAllShows();
@@ -31,6 +31,20 @@ public class ShowResource extends Resource {
         }
         String showsAsJson = GSON.toJson(showDTOs);
         return Response.status(HttpStatus.OK_200.getStatusCode()).entity(showsAsJson).build();
+    }
+
+    @DELETE
+    @Path("{id}")
+    @RolesAllowed("admin")
+    public Response deleteShow(@PathParam("id") int id) {
+        try {
+            Show show = facade.getShowById(id);
+            facade.deleteShow(show);
+        } catch (EntityNotFoundException e) {
+            //
+        }
+
+        return Response.ok().build();
     }
 
     private ShowDTO buildStandardShowDTO(Show show) {

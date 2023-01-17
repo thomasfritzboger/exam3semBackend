@@ -163,6 +163,10 @@ public class User implements entities.Entity {
         roles.add(role);
     }
 
+    public void removeAllRoles() {
+        roles = new LinkedHashSet<>();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

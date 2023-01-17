@@ -53,10 +53,28 @@ public class ShowResourceTest extends ResourceTestEnvironment {
     }
 
     @Test
-    void getAllShowsWhenUnAuthorizedTest() {
+    void getAllShowsWhenAdminTest() {
         User admin = createAndPersistAdminUser();
 
         login(admin);
+
+        given()
+                .header("x-access-token", securityToken)
+                .when()
+                .get(BASE_URL)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode());
+    }
+
+    @Test
+    void getAllShowsWhenUnAuthorizedTest() {
+
+        User unauthorized = createAndPersistUser();
+        unauthorized.removeAllRoles();
+        update(unauthorized);
+
+        login(unauthorized);
 
         given()
                 .header("x-access-token", securityToken)
@@ -73,6 +91,61 @@ public class ShowResourceTest extends ResourceTestEnvironment {
         given()
                 .when()
                 .get(BASE_URL)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.FORBIDDEN_403.getStatusCode());
+    }
+
+    @Test
+    public void deleteShowTest(){
+        User admin = createAndPersistAdminUser();
+        Show show = createAndPersistShow();
+
+        login(admin);
+
+        given()
+                .header("x-access-token", securityToken)
+                .delete(BASE_URL + show.getId())
+                .then()
+                .statusCode(HttpStatus.OK_200.getStatusCode());
+
+        assertDatabaseDoesNotHaveEntity(show);
+    }
+
+    @Test
+    public void deleteShowWhenNonExistingTest(){
+        User admin = createAndPersistAdminUser();
+
+        login(admin);
+
+        given()
+                .header("x-access-token", securityToken)
+                .delete(BASE_URL + nonExistingId)
+                .then()
+                .statusCode(HttpStatus.OK_200.getStatusCode());
+    }
+
+    @Test
+    void deleteShowNotAuthorizedUserTest() {
+        User user = createAndPersistUser();
+        Show show = createAndPersistShow();
+
+        login(user);
+
+        given()
+                .header("x-access-token", securityToken)
+                .delete(BASE_URL + show.getId())
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED_401.getStatusCode());
+    }
+
+    @Test
+    void deleteShowWhenUnAuthenticatedTest() {
+        Show show = createAndPersistShow();
+
+        given()
+                .when()
+                .delete(BASE_URL+show.getId())
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.FORBIDDEN_403.getStatusCode());
