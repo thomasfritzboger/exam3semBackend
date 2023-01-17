@@ -8,16 +8,14 @@ package utils;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import entities.City;
-import entities.Festival;
-import entities.Role;
-import entities.User;
+import entities.*;
 import errorhandling.InvalidPasswordException;
 import errorhandling.InvalidUsernameException;
 import errorhandling.UniqueException;
 import facades.UserFacade;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 
 public class Populator {
@@ -30,10 +28,19 @@ public class Populator {
 
         Festival roskildeFestival = new Festival("Roskilde Festival", LocalDate.of(2023, Month.JUNE, 24),8,roskilde);
 
+        Show showA = new Show("WaterShow",120,"Lalandia",LocalDate.of(2023, Month.JUNE, 14), LocalTime.of(12,00));
+        Show showB = new Show("FireShow",60,"Tivoli",LocalDate.of(2023, Month.MAY, 9), LocalTime.of(21,00));
+        Show showC = new Show("WindShow",120,"Fanø",LocalDate.of(2023, Month.OCTOBER, 18), LocalTime.of(10,00));
+        Show showD = new Show("EarthShow",90,"Ærø",LocalDate.of(2023, Month.APRIL, 29), LocalTime.of(16,15));
+
         try {
             em.getTransaction().begin();
             em.persist(roskilde);
             em.persist(roskildeFestival);
+            em.persist(showA);
+            em.persist(showB);
+            em.persist(showC);
+            em.persist(showD);
             em.getTransaction().commit();
         }finally {
             em.close();
