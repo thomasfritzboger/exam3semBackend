@@ -107,7 +107,7 @@ public class ShowResourceTest extends ResourceTestEnvironment {
                 .header("x-access-token", securityToken)
                 .delete(BASE_URL + show.getId())
                 .then()
-                .statusCode(HttpStatus.OK_200.getStatusCode());
+                .statusCode(HttpStatus.NO_CONTENT_204.getStatusCode());
 
         assertDatabaseDoesNotHaveEntity(show);
     }
@@ -122,7 +122,7 @@ public class ShowResourceTest extends ResourceTestEnvironment {
                 .header("x-access-token", securityToken)
                 .delete(BASE_URL + nonExistingId)
                 .then()
-                .statusCode(HttpStatus.OK_200.getStatusCode());
+                .statusCode(HttpStatus.NO_CONTENT_204.getStatusCode());
     }
 
     @Test

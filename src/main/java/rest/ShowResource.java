@@ -44,7 +44,7 @@ public class ShowResource extends Resource {
             //
         }
 
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     private ShowDTO buildStandardShowDTO(Show show) {
