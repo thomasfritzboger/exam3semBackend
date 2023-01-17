@@ -8,15 +8,19 @@ import org.junit.jupiter.api.BeforeEach;
 import utils.EMF_Creator;
 
 import javax.persistence.*;
+import java.time.ZoneId;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestEnvironment {
     protected int nonExistingId;
     protected static Faker faker = Faker.instance(new Locale("da-DK"));
-    protected static Role userRole;
+    protected static Role guestRole;
     protected static Role adminRole;
+    protected static Festival festival;
+
     protected static EntityManagerFactory emf;
 
     protected static final String password = "test123";
@@ -39,6 +43,10 @@ public class TestEnvironment {
             em.getTransaction().begin();
             em.createQuery("DELETE FROM User").executeUpdate();
             em.createQuery("DELETE FROM Role").executeUpdate();
+            em.createQuery("DELETE FROM Festival").executeUpdate();
+            em.createQuery("DELETE FROM City").executeUpdate();
+            em.createQuery("DELETE FROM Show").executeUpdate();
+
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -46,9 +54,11 @@ public class TestEnvironment {
     }
 
     private void populateDatabase() {
-        userRole = new Role("user");
+        guestRole = new Role("guest");
         adminRole = new Role("admin");
-        persist(userRole);
+        festival = createAndPersistFestival();
+        persist(festival);
+        persist(guestRole);
         persist(adminRole);
     }
 
@@ -65,7 +75,7 @@ public class TestEnvironment {
     }
 
     protected Entity update(Entity entity) {
-            return runInTransaction(em -> em.merge(entity));
+        return runInTransaction(em -> em.merge(entity));
     }
 
 
@@ -90,11 +100,16 @@ public class TestEnvironment {
     }
 
     protected User createAdminUser() {
+        Festival festival = createAndPersistFestival();
+
         try {
             User user = new User(
-                    faker.letterify("?????"),
                     password,
-                    faker.number().numberBetween(13, 120)
+                    faker.name().username(),
+                    faker.name().fullName(),
+                    Integer.parseInt(faker.number().digits(8)),
+                    faker.internet().emailAddress(),
+                    festival
             );
             user.addRole(adminRole);
             return user;
@@ -110,19 +125,55 @@ public class TestEnvironment {
     }
 
     protected User createUser() {
+        Festival festival = createAndPersistFestival();
+
         try {
             User user = new User(
-                    faker.letterify("?????"),
                     password,
-                    faker.number().numberBetween(13, 120)
+                    faker.name().username(),
+                    faker.name().fullName(),
+                    Integer.parseInt(faker.number().digits(8)),
+                    faker.internet().emailAddress(),
+                    festival
             );
-            user.addRole(userRole);
+            user.addRole(guestRole);
             return user;
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         }
         return null;
     }
+
+    protected Festival createAndPersistFestival() {
+        Festival festival = createFestival();
+        return (Festival) persist(festival);
+    }
+
+    protected Festival createFestival() {
+        City city = createAndPersistCity();
+
+        return new Festival(
+                faker.name().name(),
+                faker.date().future(500, TimeUnit.DAYS).toInstant().
+                        atZone(ZoneId.systemDefault()).toLocalDate(),
+                faker.number().numberBetween(1,50),
+                city
+        );
+    }
+
+    protected City createAndPersistCity() {
+        City city = createCity();
+        return (City) persist(city);
+    }
+
+    protected City createCity() {
+        City city = new City(
+                faker.address().cityName(),
+                Integer.parseInt(faker.number().digits(4))
+        );
+        return city;
+    }
+
     protected Role createAndPersistRole() {
         Role role = createRole();
         return (Role) persist(role);

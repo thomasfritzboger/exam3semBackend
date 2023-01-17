@@ -28,10 +28,13 @@ public class UserResourceTest extends ResourceTestEnvironment {
                 .statusCode(HttpStatus.CREATED_201.getStatusCode())
                 .contentType(ContentType.JSON)
                 .body("username", equalTo(userDTO.getUsername()))
-                .body("age", equalTo(userDTO.getAge()))
                 .body("id", notNullValue())
+                .body("name", equalTo(userDTO.getName()))
+                .body("phone", equalTo(userDTO.getPhone()))
+                .body("email", equalTo(userDTO.getEmail()))
+                .body("festival.id", equalTo(userDTO.getFestival().getId()))
                 .body("roles",hasSize(1))
-                .body("roles",hasItem("user"))
+                .body("roles",hasItem("guest"))
                 .extract().path("id");
 
         assertDatabaseHasEntity(new User(), id);
@@ -99,26 +102,6 @@ public class UserResourceTest extends ResourceTestEnvironment {
     }
 
     @Test
-    void createUserIllegalAgeTest() {
-        UserDTO userDTO = createUserDTO();
-        userDTO = new UserDTO.Builder(userDTO)
-                .setAge(faker.random().nextInt(121,300))
-                .build();
-
-        given()
-                .header("Content-type", ContentType.JSON)
-                .and()
-                .body(GSON.toJson(userDTO))
-                .when()
-                .post(BASE_URL)
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.BAD_REQUEST_400.getStatusCode())
-                .contentType(ContentType.JSON)
-                .body("message",notNullValue());
-    }
-
-    @Test
     void getUserTest() {
         User user = createAndPersistUser();
 
@@ -134,10 +117,13 @@ public class UserResourceTest extends ResourceTestEnvironment {
             .statusCode(HttpStatus.OK_200.getStatusCode())
             .contentType(ContentType.JSON)
             .body("username", equalTo(user.getUsername()))
-            .body("age", equalTo(user.getAge()))
+            .body("name", equalTo(user.getName()))
+            .body("phone", equalTo(user.getPhone()))
+            .body("email", equalTo(user.getEmail()))
+            .body("festival.id", equalTo(user.getFestival().getId()))
             .body("id", equalTo(id))
             .body("roles",hasSize(1))
-            .body("roles",hasItem("user"));
+            .body("roles",hasItem("guest"));
     }
 
     @Test

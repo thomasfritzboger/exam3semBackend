@@ -1,12 +1,22 @@
 package dtos;
 
+import entities.Festival;
+
 import java.util.List;
 
 public class UserDTO {
     private final Integer id;
     private final String username;
     private final String password;
-    private final Integer age;
+
+    private final String name;
+
+    private final Integer phone;
+
+    private final String email;
+
+    private final FestivalDTO festival;
+
     private final List<String> roles;
 
     //Konstruktør er privat for at sikre indkapsling, det er kun fra den indre klasse 'Builder',
@@ -15,7 +25,10 @@ public class UserDTO {
         this.id = builder.id;
         this.username = builder.username;
         this.password = builder.password;
-        this.age = builder.age;
+        this.name = builder.name;
+        this.phone = builder.phone;
+        this.email = builder.email;
+        this.festival = builder.festivalDTO;
         this.roles = builder.roles;
     }
 
@@ -31,8 +44,20 @@ public class UserDTO {
         return password;
     }
 
-    public Integer getAge() {
-        return age;
+    public String getName() {
+        return name;
+    }
+
+    public Integer getPhone() {
+        return phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public FestivalDTO getFestival() {
+        return festival;
     }
 
     public List<String> getRoles() {
@@ -43,7 +68,10 @@ public class UserDTO {
         private Integer id;
         private String username;
         private String password;
-        private Integer age;
+        private String name;
+        private Integer phone;
+        private String email;
+        private FestivalDTO festivalDTO;
         private List<String> roles;
 
         //Denne konstruktør er kun til test, lidt fy fy, hører ikke hjemme i produktionskoden
@@ -52,12 +80,35 @@ public class UserDTO {
                     .setId(userDTO.getId())
                     .setUsername(userDTO.getUsername())
                     .setPassword(userDTO.getPassword())
-                    .setAge(userDTO.getAge())
+                    .setName(userDTO.getName())
+                    .setPhone(userDTO.getPhone())
+                    .setEmail(userDTO.getEmail())
+                    .setFestivalDTO(userDTO.getFestival())
                     .setRoles(userDTO.getRoles());
         }
 
         //Fluent pattern bruges til at opbygge en Builder,
         public Builder() {
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setPhone(Integer phone) {
+            this.phone = phone;
+            return this;
+        }
+
+        public Builder setEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder setFestivalDTO(FestivalDTO festivalDTO) {
+            this.festivalDTO = festivalDTO;
+            return this;
         }
 
         public Builder setId(Integer id) {
@@ -72,11 +123,6 @@ public class UserDTO {
 
         public Builder setPassword(String password) {
             this.password = password;
-            return this;
-        }
-
-        public Builder setAge(Integer age) {
-            this.age = age;
             return this;
         }
 

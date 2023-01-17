@@ -1,6 +1,9 @@
 package rest;
 
 import dtos.PopulateDTO;
+import errorhandling.InvalidPasswordException;
+import errorhandling.InvalidUsernameException;
+import errorhandling.UniqueException;
 import security.errorhandling.AuthenticationException;
 import utils.Populator;
 
@@ -14,14 +17,14 @@ public class UtilityResource extends Resource{
     @Path("populate")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response populate(String populateJson) throws AuthenticationException {
+    public Response populate(String populateJson) throws AuthenticationException, UniqueException, InvalidUsernameException, InvalidPasswordException {
         PopulateDTO populateDTO = GSON.fromJson(populateJson, PopulateDTO.class);
 
         //Change secret to something secret in your own project!!!!!!!
         if (!populateDTO.getSecret().equals("exam3sem")) {
             throw new AuthenticationException("Wrong secret");
         }
-        Populator.populateWithInitialUsers(EMF);
+        Populator.populateWithInitialData(EMF);
         return Response.ok().build();
     }
 }

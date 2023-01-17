@@ -11,11 +11,15 @@ public class UserTest extends TestEnvironment {
 
     @Test
     public void createUserWithPasswordBelowMinimumLengthTest() {
+
         assertThrows(InvalidPasswordException.class, () -> {
             new User(
+                   faker.letterify("???"),
                     faker.name().username(),
-                    faker.letterify("???"),
-                    faker.number().numberBetween(13, 120)
+                    faker.name().fullName(),
+                    Integer.parseInt(faker.number().digits(8)),
+                    faker.internet().emailAddress(),
+                    festival
             );
         });
     }
@@ -24,9 +28,12 @@ public class UserTest extends TestEnvironment {
     public void createUserPasswordWithExactlyMinimumLengthTest() {
         assertDoesNotThrow(() -> {
             new User(
-                    faker.name().username(),
                     faker.letterify("????"),
-                    faker.number().numberBetween(13, 120)
+                    faker.name().username(),
+                    faker.name().fullName(),
+                    Integer.parseInt(faker.number().digits(8)),
+                    faker.internet().emailAddress(),
+                    festival
             );
         });
     }

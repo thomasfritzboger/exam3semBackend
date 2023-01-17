@@ -2,7 +2,6 @@ package facades;
 
 import TestEnvironment.TestEnvironment;
 import entities.User;
-import errorhandling.IllegalAgeException;
 import errorhandling.InvalidUsernameException;
 
 import errorhandling.UniqueException;
@@ -38,34 +37,6 @@ public class UserFacadeTest extends TestEnvironment {
         user = facade.createUser(user);
 
         assertNotNull(user.getId());
-    }
-
-    @Test
-    public void createUserWithAgeBelowMinimumTest() {
-        User user = createUser();
-        user.setAge(12);
-        assertThrows(IllegalAgeException.class, () -> facade.createUser(user));
-    }
-
-    @Test
-    public void createUserWithAgeAboveMaximumTest() {
-        User user = createUser();
-        user.setAge(121);
-        assertThrows(IllegalAgeException.class, () -> facade.createUser(user));
-    }
-
-    @Test
-    public void createUserWithExactlyTheMinimumAgeTest() {
-        User user = createUser();
-        user.setAge(13);
-        assertDoesNotThrow(() -> facade.createUser(user));
-    }
-
-    @Test
-    public void createUserWithExactlyTheMaximumAgeTest() {
-        User user = createUser();
-        user.setAge(120);
-        assertDoesNotThrow(() -> facade.createUser(user));
     }
 
     @Test
@@ -126,16 +97,6 @@ public class UserFacadeTest extends TestEnvironment {
     }
 
     @Test
-    public void updateAgeTest() throws Exception {
-        User user = createAndPersistUser();
-        user.setAge(faker.number().numberBetween(18,80));
-
-        facade.updateUser(user);
-
-        assertDatabaseHasEntityWith(user,"age",user.getAge());
-    }
-
-    @Test
     public void updateUsernameWhenItAlreadyIsInUseTest() {
         User userA = createAndPersistUser();
         User userB = createAndPersistUser();
@@ -174,22 +135,6 @@ public class UserFacadeTest extends TestEnvironment {
         user.setUsername(faker.letterify("?????????????????????"));
 
         assertThrows(InvalidUsernameException.class,()-> facade.updateUser(user));
-    }
-
-    @Test
-    public void updateAgeWhenUnderMinimumTest() {
-        User user = createAndPersistUser();
-        user.setAge(12);
-
-        assertThrows(IllegalAgeException.class,()-> facade.updateUser(user));
-    }
-
-    @Test
-    public void updateAgeWhenOverMaximumTest() {
-        User user = createAndPersistUser();
-        user.setAge(121);
-
-        assertThrows(IllegalAgeException.class,()-> facade.updateUser(user));
     }
 
     @Test
