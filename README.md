@@ -53,23 +53,4 @@ Build the project.
 ### Populate tables with test users and roles
 - run the method in SetupTestUsers to create tables and populate them in the database
 
-### Add/change tables In MySQL Workbench
-- In the menu, choose Database -> Reverse Engineer
-- Press Continue twice
-- Select schema
-- Continue, execute and close
-- Make the desired changes in the EER diagram
-- In the menu, choose Database -> Forward Engineer
-- Continue x2. Copy SQL script to be executed.
-- Delete your old tables and data
-- Run the script
 
-### Create entities from database in IntelliJ (Persistence mappings)
-- From inside the Persistence window:
-- Right-click a persistence unit, point to Generate Persistence Mapping and select By Database Schema.
-- Select the
-    - data source
-    - package
-    - tick tables to include
-    - open tables to see columns and add the ones with mapped type: Collection<SomeEntity> and SomeEntity
-    - click OK.
