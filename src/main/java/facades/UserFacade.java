@@ -1,11 +1,10 @@
 package facades;
 
 import entities.Entity;
-import entities.User;
 
 import javax.persistence.*;
 
-import errorhandling.IllegalAgeException;
+import entities.User;
 import errorhandling.InvalidUsernameException;
 import errorhandling.UniqueException;
 import security.errorhandling.AuthenticationException;
@@ -15,9 +14,6 @@ import java.util.List;
 public class UserFacade {
     private static EntityManagerFactory emf;
     private static UserFacade instance;
-
-    public static final int MINIMUM_AGE = 13;
-    public static final int MAXIMUM_AGE = 120;
 
     public static final int MINIMUM_USERNAME_LENGTH = 3;
     public static final int MAXIMUM_USERNAME_LENGTH = 20;
@@ -54,12 +50,9 @@ public class UserFacade {
         return user;
     }
 
-    public User createUser(User user) throws IllegalAgeException, InvalidUsernameException, UniqueException {
+    public User createUser(User user) throws InvalidUsernameException, UniqueException {
         EntityManager em = emf.createEntityManager();
 
-        if(user.getAge() < MINIMUM_AGE || user.getAge() > MAXIMUM_AGE) {
-            throw new IllegalAgeException(user.getAge());
-        }
 
         if(user.getUsername() == null || user.getUsername().equals("")) {
             throw new InvalidUsernameException("Username cannot be null or an empty string");
@@ -86,7 +79,7 @@ public class UserFacade {
         return user;
     }
 
-    public void updateUser(User user) throws UniqueException, InvalidUsernameException, IllegalAgeException {
+    public void updateUser(User user) throws UniqueException, InvalidUsernameException {
         EntityManager em = emf.createEntityManager();
 
         validateUser(user);
@@ -102,7 +95,7 @@ public class UserFacade {
         }
     }
 
-    private void validateUser(User user) throws IllegalAgeException, InvalidUsernameException {
+    private void validateUser(User user) throws InvalidUsernameException {
         if(user.getUsername() == null || user.getUsername().equals("")) {
             throw new InvalidUsernameException("Username cannot be null or an empty string");
         }
@@ -112,10 +105,6 @@ public class UserFacade {
             throw new InvalidUsernameException("Username length should be between "
                     + MINIMUM_USERNAME_LENGTH + " and "
                     + MAXIMUM_USERNAME_LENGTH+ " characters");
-        }
-
-        if(user.getAge() < MINIMUM_AGE || user.getAge() > MAXIMUM_AGE) {
-            throw new IllegalAgeException(user.getAge());
         }
     }
 

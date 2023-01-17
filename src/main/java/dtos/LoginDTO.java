@@ -4,7 +4,6 @@ public class LoginDTO {
 
     private final String username;
     private final String password;
-
     private final String token;
 
     private LoginDTO(Builder builder) {

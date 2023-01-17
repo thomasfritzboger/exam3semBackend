@@ -3,6 +3,7 @@ package rest;
 import TestEnvironment.TestEnvironment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dtos.FestivalDTO;
 import dtos.UserDTO;
 import entities.User;
 import io.restassured.RestAssured;
@@ -66,11 +67,18 @@ public class ResourceTestEnvironment extends TestEnvironment {
     protected UserDTO createUserDTO() {
         User user = createUser();
 
+        FestivalDTO festivalDTO = new FestivalDTO.Builder()
+                .setId(user.getFestival().getId())
+                .build();
+
         return new UserDTO.Builder()
                 .setId(user.getId())
-                .setUsername(user.getUsername())
                 .setPassword(password)
-                .setAge(user.getAge())
+                .setUsername(user.getUsername())
+                .setName(user.getName())
+                .setPhone(user.getPhone())
+                .setEmail(user.getEmail())
+                .setFestivalDTO(festivalDTO)
                 .setRoles(user.getRolesAsStringList())
                 .build();
     }

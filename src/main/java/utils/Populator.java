@@ -8,67 +8,49 @@ package utils;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import entities.City;
+import entities.Festival;
 import entities.Role;
 import entities.User;
-import errorhandling.IllegalAgeException;
 import errorhandling.InvalidPasswordException;
 import errorhandling.InvalidUsernameException;
 import errorhandling.UniqueException;
 import facades.UserFacade;
 
+import java.time.LocalDate;
+import java.time.Month;
+
 public class Populator {
 
-    public static void main(String[] args) throws InvalidPasswordException, InvalidUsernameException, IllegalAgeException, UniqueException {
-        populateWithTestUsers();
-    }
-
     //Fails quietly
-    public static void populateWithInitialUsers(EntityManagerFactory emf) {
+    public static void populateWithInitialData(EntityManagerFactory emf) throws UniqueException, InvalidUsernameException, InvalidPasswordException {
+        EntityManager em = emf.createEntityManager();
+
+        City roskilde = new City("Roskilde",4000);
+
+        Festival roskildeFestival = new Festival("Roskilde Festival", LocalDate.of(2023, Month.JUNE, 24),8,roskilde);
+
         try {
-            UserFacade userFacade = UserFacade.getFacade(emf);
-            Role userRole = persistRole("user",emf);
-            Role adminRole = persistRole("admin",emf);
-
-            //Change password to something secret in your own project!!!!!!!
-            User user = new User("user", "test123", 33);
-            User admin = new User("admin", "test123", 44);
-
-            user.addRole(userRole);
-            admin.addRole(adminRole);
-
-            userFacade.createUser(user);
-            userFacade.createUser(admin);
-        } catch (Exception e) {
-            //
+            em.getTransaction().begin();
+            em.persist(roskilde);
+            em.persist(roskildeFestival);
+            em.getTransaction().commit();
+        }finally {
+            em.close();
         }
-    }
 
-    public static void populateWithTestUsers() throws InvalidPasswordException, InvalidUsernameException, IllegalAgeException, UniqueException {
-        EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
         UserFacade userFacade = UserFacade.getFacade(emf);
-
-        Role userRole = persistRole("user",emf);
+        Role guestRole = persistRole("guest",emf);
         Role adminRole = persistRole("admin",emf);
 
-        User user = new User("user","1234",26);
-        User admin = new User("admin","1234",26);
-        User userAdmin = new User("user_admin","1234",23);
-        User noRole = new User("no_role","1234",36);
+        User user = new User("test123", "guest", "Hans Nielsen",30303030,"hn@mail.dk",roskildeFestival);
+        User admin = new User("test123", "admin", "Anders Hansen",40404040,"ah@mail.dk",roskildeFestival);
 
-        user.addRole(userRole);
+        user.addRole(guestRole);
         admin.addRole(adminRole);
-        userAdmin.addRole(userRole);
-        userAdmin.addRole(adminRole);
 
         userFacade.createUser(user);
         userFacade.createUser(admin);
-        userFacade.createUser(userAdmin);
-        userFacade.createUser(noRole);
-
-        System.out.println("PW: " + user.getPassword());
-        System.out.println("Testing user with OK password: " + user.verifyPassword("1234"));
-        System.out.println("Testing user with wrong password: " + user.verifyPassword("1235"));
-        System.out.println("Created TEST Users");
     }
 
     private static Role persistRole(String roleString, EntityManagerFactory emf) {

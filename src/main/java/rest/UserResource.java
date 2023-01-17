@@ -1,11 +1,12 @@
 package rest;
 
 import dtos.*;
+import entities.Festival;
 import entities.User;
-import errorhandling.IllegalAgeException;
 import errorhandling.InvalidPasswordException;
 import errorhandling.InvalidUsernameException;
 import errorhandling.UniqueException;
+import facades.FestivalFacade;
 import facades.RoleFacade;
 import facades.UserFacade;
 import org.glassfish.grizzly.http.util.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 public class UserResource extends Resource {
     private final UserFacade facade = UserFacade.getFacade(EMF);
     private final RoleFacade roleFacade = RoleFacade.getFacade(EMF);
+    private final FestivalFacade festivalFacade = FestivalFacade.getFacade(EMF);
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
@@ -28,15 +30,26 @@ public class UserResource extends Resource {
     public Response createUser(String userFromJson) {
         UserDTO userDTO = GSON.fromJson(userFromJson, UserDTO.class);
         User user;
+        Festival festival;
 
         try {
-            user = new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getAge());
-            user.addRole(roleFacade.getRoleByRole("user"));
+            festival = festivalFacade.getFestivalById(userDTO.getFestival().getId());
+
+            user = new User(
+                    userDTO.getPassword(),
+                    userDTO.getUsername(),
+                    userDTO.getName(),
+                    userDTO.getPhone(),
+                    userDTO.getEmail(),
+                    festival
+            );
+
+            user.addRole(roleFacade.getRoleByRole("guest"));
             user = facade.createUser(user);
         } catch (UniqueException e) {
              throw new WebApplicationException(e.getMessage(),HttpStatus.CONFLICT_409.getStatusCode());
         }
-        catch (InvalidUsernameException | InvalidPasswordException | IllegalAgeException e) {
+        catch (InvalidUsernameException | InvalidPasswordException e) {
             throw new BadRequestException(e.getMessage());
         }
         //Build af standardUserDTO flyttet ud i egen metode for læselighed
@@ -46,7 +59,7 @@ public class UserResource extends Resource {
     }
 
     @GET
-    @RolesAllowed({"user","admin"})
+    @RolesAllowed({"guest","admin"})
     @Path("me")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getMe() {
@@ -74,7 +87,6 @@ public class UserResource extends Resource {
             allUserDTOs.add(new UserDTO.Builder()
                     .setId(user.getId())
                     .setUsername(user.getUsername())
-                    .setAge(user.getAge())
                     .setRoles(user.getRolesAsStringList())
                     .build());
         }
@@ -96,19 +108,12 @@ public class UserResource extends Resource {
             if (userDTO.getUsername() != null) {
                 user.setUsername(userDTO.getUsername());
             }
-
-            if (userDTO.getAge() != null) {
-                user.setAge(userDTO.getAge());
-            }
             facade.updateUser(user);
 
         }catch (EntityNotFoundException entityNotFoundException){
             throw new BadRequestException("User does not exist");
         } catch (UniqueException uniqueException) {
             throw new WebApplicationException("Chosen username is already in use",
-                    HttpStatus.CONFLICT_409.getStatusCode());
-        } catch (IllegalAgeException illegalAgeException) {
-            throw new WebApplicationException("You need to be between 18 and 80 years old to use this site",
                     HttpStatus.CONFLICT_409.getStatusCode());
         } catch (InvalidUsernameException invalidUsernameException) {
             throw new WebApplicationException("Your username was either too long or too short, " +
@@ -132,10 +137,17 @@ public class UserResource extends Resource {
     }
 
     private UserDTO buildStandardUserDTO(User user) {
+        FestivalDTO festivalDTO = new FestivalDTO.Builder()
+                .setId(user.getFestival().getId())
+                .build();
+
         return new UserDTO.Builder()
                 .setId(user.getId())
                 .setUsername(user.getUsername())
-                .setAge(user.getAge())
+                .setName(user.getName())
+                .setPhone(user.getPhone())
+                .setEmail(user.getEmail())
+                .setFestivalDTO(festivalDTO)
                 .setRoles(user.getRolesAsStringList())
                 .build();
     }
