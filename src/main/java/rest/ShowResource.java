@@ -2,7 +2,6 @@ package rest;
 
 import dtos.ShowDTO;
 import entities.Show;
-import entities.User;
 import facades.ShowFacade;
 import org.glassfish.grizzly.http.util.HttpStatus;
 
@@ -33,6 +32,29 @@ public class ShowResource extends Resource {
         return Response.status(HttpStatus.OK_200.getStatusCode()).entity(showsAsJson).build();
     }
 
+    @POST
+    @RolesAllowed("admin")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response createShow(String showFromJson) {
+
+        ShowDTO showDTO = GSON.fromJson(showFromJson, ShowDTO.class);
+        Show show = new Show(
+                showDTO.getName(),
+                showDTO.getDuration(),
+                showDTO.getLocation(),
+                showDTO.getStartDate(),
+                showDTO.getStartTime()
+        );
+
+        show = facade.createShow(show);
+
+        showDTO = buildStandardShowDTO(show);
+        String showAsJson = GSON.toJson(showDTO);
+
+        return Response.status(HttpStatus.CREATED_201.getStatusCode()).entity(showAsJson).build();
+    }
+
     @DELETE
     @Path("{id}")
     @RolesAllowed("admin")
@@ -54,8 +76,8 @@ public class ShowResource extends Resource {
                 .setName(show.getName())
                 .setDuration(show.getDuration())
                 .setLocation(show.getLocation())
-                .setStartDate(show.getStartdate())
-                .setStartTime(show.getStarttime())
+                .setStartDate(show.getStartDate())
+                .setStartTime(show.getStartTime())
                 .build();
     }
 }

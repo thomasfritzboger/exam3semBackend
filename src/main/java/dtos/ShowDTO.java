@@ -28,12 +28,12 @@ public class ShowDTO {
         return location;
     }
 
-    public String getStartDate() {
-        return start_date;
+    public LocalDate getStartDate() {
+        return LocalDate.parse(start_date);
     }
 
-    public String getStartTime() {
-        return start_time;
+    public LocalTime getStartTime() {
+        return LocalTime.parse(start_time);
     }
 
     private ShowDTO (Builder builder) {

@@ -2,6 +2,7 @@ package facades;
 
 import entities.City;
 import entities.Show;
+import entities.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -55,5 +56,20 @@ public class ShowFacade {
             }
             return show;
 
+    }
+
+    public Show createShow(Show show) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+            em.persist(show);
+            em.getTransaction().commit();
+        }
+        finally {
+            em.close();
+        }
+
+        return show;
     }
 }

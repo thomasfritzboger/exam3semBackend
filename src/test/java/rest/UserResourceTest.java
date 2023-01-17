@@ -37,7 +37,10 @@ public class UserResourceTest extends ResourceTestEnvironment {
                 .body("roles",hasItem("guest"))
                 .extract().path("id");
 
-        assertDatabaseHasEntity(new User(), id);
+        User user = new User();
+        user.setId(id);
+
+        assertDatabaseHasEntity(user);
     }
 
     @Test

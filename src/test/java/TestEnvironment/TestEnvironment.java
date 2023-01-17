@@ -202,11 +202,11 @@ public class TestEnvironment {
         return new Role(faker.letterify("????"));
     }
 
-    protected void assertDatabaseHasEntity(Entity entity, int id) {
+    protected void assertDatabaseHasEntity(Entity entity) {
         EntityManager em = emf.createEntityManager();
         try {
-            entity = em.find(entity.getClass(), id);
-            assertNotNull(entity, "Entity: " + entity.getClass()+" with id: " + id + " does not exist..");
+            entity = em.find(entity.getClass(), entity.getId());
+            assertNotNull(entity, "Entity: " + entity.getClass()+" with id: " + entity.getId() + " does not exist..");
         } finally {
             em.close();
         }
@@ -223,7 +223,7 @@ public class TestEnvironment {
     }
 
     protected void assertDatabaseHasEntityWith(Entity persistedEntity, String property, Object value) {
-        assertDatabaseHasEntity(persistedEntity,persistedEntity.getId());
+        assertDatabaseHasEntity(persistedEntity);
 
         assertDatabaseHasPropertyAndValue(persistedEntity,property,value);
     }

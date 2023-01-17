@@ -1,5 +1,6 @@
 package rest;
 
+import dtos.ShowDTO;
 import entities.Show;
 import entities.User;
 import io.restassured.http.ContentType;
@@ -94,6 +95,71 @@ public class ShowResourceTest extends ResourceTestEnvironment {
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.FORBIDDEN_403.getStatusCode());
+    }
+
+    @Test
+    public void createShowTest() {
+        User admin = createAndPersistAdminUser();
+
+        Show show = createShow();
+        ShowDTO showDTO = new ShowDTO.Builder()
+                .setName(show.getName())
+                .setDuration(show.getDuration())
+                .setLocation(show.getLocation())
+                .setStartDate(show.getStartDate())
+                .setStartTime(show.getStartTime())
+                .build();
+
+        login(admin);
+
+        int id = given()
+                .header("Content-type", ContentType.JSON)
+                .header("x-access-token",securityToken)
+                .body(GSON.toJson(showDTO))
+                .post(BASE_URL)
+                .then()
+                .statusCode(HttpStatus.CREATED_201.getStatusCode())
+                .contentType(ContentType.JSON)
+                .body("id",notNullValue())
+                .body("name", equalTo(showDTO.getName()))
+                .body("duration",equalTo(showDTO.getDuration()))
+                .body("location",equalTo(showDTO.getLocation()))
+                .body("start_date",equalTo(showDTO.getStartDate().toString()))
+                .body("start_time",equalTo(showDTO.getStartTime().toString()))
+                .extract().path("id");
+
+        show.setId(id);
+        assertDatabaseHasEntity(show);
+    }
+
+    @Test
+    public void createShowWhenUnauthenticatedTest() {
+
+        given()
+                .header("Content-type", ContentType.JSON)
+                .body("")
+                .post(BASE_URL)
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN_403.getStatusCode())
+                .contentType(ContentType.JSON)
+                .body("message",notNullValue());
+    }
+
+    @Test
+    public void createShowWhenUnauthorizedTest() {
+        User guest = createAndPersistUser();
+
+        login(guest);
+
+        given()
+                .header("Content-type", ContentType.JSON)
+                .header("x-access-token",securityToken)
+                .body("")
+                .post(BASE_URL)
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED_401.getStatusCode())
+                .contentType(ContentType.JSON)
+                .body("message",notNullValue());
     }
 
     @Test

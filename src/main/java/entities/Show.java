@@ -89,20 +89,20 @@ public class Show implements entities.Entity {
         this.location = location;
     }
 
-    public LocalDate getStartdate() {
+    public LocalDate getStartDate() {
         return startdate;
     }
 
-    public void setStartdate(LocalDate startdate) {
-        this.startdate = startdate;
+    public void setStartDate(LocalDate startDate) {
+        this.startdate = startDate;
     }
 
-    public LocalTime getStarttime() {
+    public LocalTime getStartTime() {
         return starttime;
     }
 
-    public void setStarttime(LocalTime starttime) {
-        this.starttime = starttime;
+    public void setStartTime(LocalTime startTime) {
+        this.starttime = startTime;
     }
 
     public Set<User> getUsers() {

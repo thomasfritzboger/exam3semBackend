@@ -57,6 +57,15 @@ public class ShowFacadeTest extends TestEnvironment {
     }
 
     @Test
+    public void createShowTest() {
+        Show show = createShow();
+
+        Show actual = facade.createShow(show);
+
+        assertDatabaseHasEntity(actual);
+    }
+
+    @Test
     public void deleteShowTest(){
         Show show = createAndPersistShow();
         facade.deleteShow(show);
